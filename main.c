@@ -1586,25 +1586,23 @@ void opc7(char * comando) {
  */
 int main() {
     
-    LISTA *lista = criar_lista();
+    LISTA *lista = listaCriar();
     
-    inserir_inicio(lista,1);
-    inserir_inicio(lista,20);
-    inserir_inicio(lista,23);
-    inserir_inicio(lista,11);
-    inserir_inicio(lista,62);
-    inserir_inicio(lista,3);
+    listarInserirInicio(lista,1);
+    listarInserirInicio(lista,2);
+    listarInserirInicio(lista,3);
+    listarInserirInicio(lista,4);
+    listarInserirInicio(lista,5);
+    listarInserirInicio(lista,6);
     
     
-    imprimir_lista(lista);
+    listarImprimir(lista);
     
-    quickSort(&lista->inicio);
+    qsOrdernarLista(&lista->inicio);
     
-    imprimir_lista(lista);
-    
-    apagar_lista(lista);
-    
-    imprimir_lista(lista);
+    listarImprimir(lista);
+
+    listarApagar(lista);
     
     return 0;
 

@@ -27,32 +27,49 @@ typedef struct {
 /********************************************************************
  * Metodos da Lista
  *******************************************************************/
-LISTA *criar_lista(void);
+LISTA *listaCriar(void);
 
-int inserir_inicio(LISTA *lista, int item);
+int listarInserirInicio(LISTA *lista, int item);
 
-void imprimir_lista(LISTA *lista);
+void listarImprimir(LISTA *lista);
 
-void apagar_lista(LISTA *lista);
+void listarApagar(LISTA *lista);
 
 /******************************************************************
  * Metodos do Quick Sort
  *******************************************************************/
 
 
-// Returns the last node of the list 
-NO * getTail(NO *cur);
+/**
+ * Retorna o ultimo no da lista
+ * @param cur
+ * @return 
+ */
+NO * qsUltimoNo(NO *cur);
 
-// Partitions the list taking the last element as the pivot 
-NO * partition(NO *head, NO *end, NO **newHead, NO **newEnd);
+/**
+ * Particiona a lista tomando o último elemento como o pivo
+ * @param inicio
+ * @param fim
+ * @param novoInicio
+ * @param novoFim
+ * @return retorna o novo pivot
+ */
+NO * qsParticionar(NO *inicio, NO *fim, NO **novoInicio, NO **novoFim);
 
+/**
+ * Faz a classificação exclusiva do no final
+ * @param inicio
+ * @param fim
+ * @return novo inicio da lista
+ */
+NO * qsRecursao(NO *inicio, NO *fim);
 
-//here the sorting happens exclusive of the end node 
-NO * quickSortRecur(NO *head, NO *end);
-
-// The main function for quick sort. This is a wrapper over recursive 
-// function quickSortRecur() 
-void quickSort(NO **headRef);
+/**
+ * Função para ordenar uma lista
+ * @param cabeca da lista
+ */
+void qsOrdernarLista(NO **cabeca);
 
 
 #endif /* LISTA_H */

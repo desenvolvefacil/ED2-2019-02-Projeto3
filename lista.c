@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-LISTA *criar_lista(void) {
+LISTA *listaCriar(void) {
     LISTA *lista = (LISTA *) malloc(sizeof (LISTA));
 
     lista->inicio = NULL;
@@ -16,7 +16,7 @@ LISTA *criar_lista(void) {
     return lista;
 }
 
-int inserir_inicio(LISTA *lista, int item) {
+int listarInserirInicio(LISTA *lista, int item) {
 
     NO *no_novo = (NO *) malloc(sizeof (NO));
     no_novo->item = item;
@@ -27,7 +27,7 @@ int inserir_inicio(LISTA *lista, int item) {
     return 1;
 }
 
-void imprimir_lista(LISTA *lista) {
+void listarImprimir(LISTA *lista) {
 
     if (lista != NULL) {
         NO *no = lista->inicio;
@@ -40,7 +40,7 @@ void imprimir_lista(LISTA *lista) {
     printf("\n");
 }
 
-void apagar_lista(LISTA*lista) {
+void listarApagar(LISTA*lista) {
     if (lista != NULL) {
         NO *cabeca = lista->inicio;
 
@@ -66,99 +66,87 @@ void apagar_lista(LISTA*lista) {
  * */
 
 
-// Returns the last node of the list 
-
-NO *getTail(NO *cur) {
+NO *qsUltimoNo(NO *cur) {
     while (cur != NULL && cur->proximo != NULL)
         cur = cur->proximo;
     return cur;
 }
 
+NO *qsParticionar(NO *incio, NO *fim, NO **novoInicio, NO **novoFim) {
+    NO *pivot = fim;
+    NO *prev = NULL, *cur = incio, *cauda = pivot;
 
-// Partitions the list taking the last element as the pivot 
-
-NO *partition(NO *head, NO *end, NO **newHead, NO **newEnd) {
-    NO *pivot = end;
-    NO *prev = NULL, *cur = head, *tail = pivot;
-
-    // During partition, both the head and end of the list might change 
-    // which is updated in the newHead and newEnd variables 
+    // Durante a partição, tanto o inio como o final da lista podem mudar
+    // valores atualizados nas variáveis novoInicio e novoFim
     while (cur != pivot) {
         if (cur->item < pivot->item) {
-            // First node that has a value less than the pivot - becomes 
-            // the new head 
-            if ((*newHead) == NULL)
-                (*newHead) = cur;
+            //O primeiro nó que tem um valor menor que o pivô - torna-se o novo inicio
+            if ((*novoInicio) == NULL)
+                (*novoInicio) = cur;
 
             prev = cur;
             cur = cur->proximo;
-        } else // If cur node is greater than pivot 
+        } else
         {
-            // Move cur node to next of tail, and change tail 
+            // Mover o nó cur para a próxima cauda e mudar a cauda
             if (prev) {
                 prev->proximo = cur->proximo;
             }
             NO *tmp = cur->proximo;
             cur->proximo = NULL;
-            tail->proximo = cur;
-            tail = cur;
+            cauda->proximo = cur;
+            cauda = cur;
             cur = tmp;
         }
     }
 
-    // If the pivot data is the smallest element in the current list, 
-    // pivot becomes the head 
-    if ((*newHead) == NULL)
-        (*newHead) = pivot;
+    // Se os dados dinâmicos forem o menor elemento na lista atual o pivô se torna a cabeça
+    if ((*novoInicio) == NULL)
+        (*novoInicio) = pivot;
 
-    // Update newEnd to the current last node 
-    (*newEnd) = tail;
+    // atualiza o novoFim para o último nó atual
+    (*novoFim) = cauda;
 
-    // Return the pivot node 
+  
     return pivot;
 }
 
+NO *qsRecursao(NO *inicio, NO *fim) {
+    //condição para rodar o metodo
+    if (!inicio || inicio == fim) {
+        return inicio;
+    }
 
-//here the sorting happens exclusive of the end node 
+    NO *novoInicio = NULL, *novoFim = NULL;
 
-NO *quickSortRecur(NO *head, NO *end) {
-    // base condition 
-    if (!head || head == end)
-        return head;
+    // Particiona a lista, novoInicio e novoFim serão atualizados
+    // pela função de partição
+    NO *pivot = qsParticionar(inicio, fim, &novoInicio, &novoFim);
 
-    NO *newHead = NULL, *newEnd = NULL;
-
-    // Partition the list, newHead and newEnd will be updated 
-    // by the partition function 
-    NO *pivot = partition(head, end, &newHead, &newEnd);
-
-    // If pivot is the smallest element - no need to recur for 
-    // the left part. 
-    if (newHead != pivot) {
-        // Set the node before the pivot node as NULL 
-        NO *tmp = newHead;
+    
+    // Se pivot é o menor elemento - não há necessidade de de chamar a recursão par ao lado esquerdo do pivo.
+    if (novoInicio != pivot) {
+        //Definir o nó antes do nó tmp como NULL
+        NO *tmp = novoInicio;
         while (tmp->proximo != pivot)
             tmp = tmp->proximo;
         tmp->proximo = NULL;
 
-        // Recur for the list before pivot 
-        newHead = quickSortRecur(newHead, tmp);
+        //chama o metodo recursivo para sublista antes do pivot
+        novoInicio = qsRecursao(novoInicio, tmp);
 
-        // Change next of last node of the left half to pivot 
-        tmp = getTail(newHead);
+        // Altera o próximo do último nó da metade esquerda para girar
+        tmp = qsUltimoNo(novoInicio);
         tmp->proximo = pivot;
     }
 
-    // Recur for the list after the pivot element 
-    pivot->proximo = quickSortRecur(pivot->proximo, newEnd);
+    //chama o metodo recursivo para sublista após do pivot
+    pivot->proximo = qsRecursao(pivot->proximo, novoFim);
 
-    return newHead;
+    return novoInicio;
 }
 
-// The main function for quick sort. This is a wrapper over recursive 
-// function quickSortRecur() 
-
-void quickSort(NO **headRef) {
-    (*headRef) = quickSortRecur(*headRef, getTail(*headRef));
+void qsOrdernarLista(NO **inicio) {
+    (*inicio) = qsRecursao(*inicio, qsUltimoNo(*inicio));
     return;
 }
