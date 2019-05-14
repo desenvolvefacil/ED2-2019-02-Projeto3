@@ -22,18 +22,18 @@ typedef struct node {
 
 typedef struct {
     NO *inicio;
-    NO *fim;
-    int tamanho; //tamanho da fila
-} LISTA_DINAMICA;
+} LISTA;
 
 /********************************************************************
  * Metodos da Lista
  *******************************************************************/
-LISTA_DINAMICA *criar_lista(void);
+LISTA *criar_lista(void);
 
-int inserir_inicio(LISTA_DINAMICA *lista, int item);
+int inserir_inicio(LISTA *lista, int item);
 
-void imprimir_lista(LISTA_DINAMICA *lista);
+void imprimir_lista(LISTA *lista);
+
+void apagar_lista(LISTA *lista);
 
 /******************************************************************
  * Metodos do Quick Sort

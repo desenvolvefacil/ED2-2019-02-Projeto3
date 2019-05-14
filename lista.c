@@ -8,18 +8,15 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-LISTA_DINAMICA *criar_lista(void) {
-    LISTA_DINAMICA *lista = (LISTA_DINAMICA *) malloc(sizeof (LISTA_DINAMICA));
+LISTA *criar_lista(void) {
+    LISTA *lista = (LISTA *) malloc(sizeof (LISTA));
 
     lista->inicio = NULL;
-    lista->fim = NULL;
-
-    lista->tamanho = 0;
 
     return lista;
 }
 
-int inserir_inicio(LISTA_DINAMICA *lista, int item) {
+int inserir_inicio(LISTA *lista, int item) {
 
     NO *no_novo = (NO *) malloc(sizeof (NO));
     no_novo->item = item;
@@ -30,16 +27,35 @@ int inserir_inicio(LISTA_DINAMICA *lista, int item) {
     return 1;
 }
 
-void imprimir_lista(LISTA_DINAMICA *lista) {
-    NO *no = lista->inicio;
-    while (no != NULL) {
-        printf("[%d]-> ", no->item);
+void imprimir_lista(LISTA *lista) {
 
-        no = no->proximo;
+    if (lista != NULL) {
+        NO *no = lista->inicio;
+        while (no != NULL) {
+            printf("[%d]-> ", no->item);
+
+            no = no->proximo;
+        }
     }
-
     printf("\n");
 }
+
+void apagar_lista(LISTA*lista) {
+    if (lista != NULL) {
+        NO *cabeca = lista->inicio;
+
+        while (cabeca != NULL) {
+            NO *aux = cabeca;
+            cabeca = cabeca->proximo;
+
+            free(aux);
+        }
+
+        lista->inicio = NULL;
+
+    }
+}
+
 
 /*******
  * 
@@ -76,11 +92,10 @@ NO *partition(NO *head, NO *end, NO **newHead, NO **newEnd) {
 
             prev = cur;
             cur = cur->proximo;
-        }
-        else // If cur node is greater than pivot 
+        } else // If cur node is greater than pivot 
         {
             // Move cur node to next of tail, and change tail 
-            if (prev){
+            if (prev) {
                 prev->proximo = cur->proximo;
             }
             NO *tmp = cur->proximo;

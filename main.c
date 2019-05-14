@@ -1586,19 +1586,23 @@ void opc7(char * comando) {
  */
 int main() {
     
-    LISTA_DINAMICA *lista = criar_lista();
+    LISTA *lista = criar_lista();
     
     inserir_inicio(lista,1);
-    inserir_inicio(lista,2);
-    inserir_inicio(lista,3);
-    inserir_inicio(lista,1);
-    inserir_inicio(lista,2);
+    inserir_inicio(lista,20);
+    inserir_inicio(lista,23);
+    inserir_inicio(lista,11);
+    inserir_inicio(lista,62);
     inserir_inicio(lista,3);
     
     
     imprimir_lista(lista);
     
     quickSort(&lista->inicio);
+    
+    imprimir_lista(lista);
+    
+    apagar_lista(lista);
     
     imprimir_lista(lista);
     
