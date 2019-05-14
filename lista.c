@@ -16,10 +16,10 @@ LISTA *listaCriar(void) {
     return lista;
 }
 
-int listarInserirInicio(LISTA *lista, int item) {
+int listarInserirInicio(LISTA *lista, int nroInscricao) {
 
     NO *no_novo = (NO *) malloc(sizeof (NO));
-    no_novo->item = item;
+    no_novo->nroInscricao = nroInscricao;
     no_novo->proximo = lista->inicio;
 
     lista->inicio = no_novo;
@@ -32,7 +32,7 @@ void listarImprimir(LISTA *lista) {
     if (lista != NULL) {
         NO *no = lista->inicio;
         while (no != NULL) {
-            printf("[%d]-> ", no->item);
+            printf("[%d]-> ", no->nroInscricao);
 
             no = no->proximo;
         }
@@ -79,7 +79,7 @@ NO *qsParticionar(NO *incio, NO *fim, NO **novoInicio, NO **novoFim) {
     // Durante a partição, tanto o inio como o final da lista podem mudar
     // valores atualizados nas variáveis novoInicio e novoFim
     while (cur != pivot) {
-        if (cur->item < pivot->item) {
+        if (cur->nroInscricao < pivot->nroInscricao) {
             //O primeiro nó que tem um valor menor que o pivô - torna-se o novo inicio
             if ((*novoInicio) == NULL)
                 (*novoInicio) = cur;
