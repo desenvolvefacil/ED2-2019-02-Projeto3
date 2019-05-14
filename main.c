@@ -36,18 +36,11 @@
 
 #define NULO "NULO"
 
-/*
-//comandos de teste
-1 csv.csv
-2 arquivoTrab1si.bin
-3 arquivoTrab1si.bin nroInscricao 332
-3 arquivoTrab1si.bin nota 561.3
-3 arquivoTrab1si.bin data 23/01/2017
-3 arquivoTrab1si.bin cidade Recife
-3 arquivoTrab1si.bin cidade Joao Pessoa    
-3 arquivoTrab1si.bin nomeEscola FRANCISCO RIBEIRO CARRI
-4 arquivoTrab1si.bin 4999
- */
+
+
+
+
+
 
 /**
  * Recebe o path de um arquivo binario e mostra em tela

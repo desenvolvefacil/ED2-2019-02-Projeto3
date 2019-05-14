@@ -16,7 +16,14 @@
 
 /* substitua "elemento" pelo tipo de dado utilizado */
 typedef struct node {
-    int item;
+    int nroInscricao;
+    double nota;
+    char data[11];
+    int tamanhoCidade;
+    char cidade[100];
+    int tamanhoEscola;
+    char nomeEscola[100];
+
     struct node *proximo;
 } NO;
 

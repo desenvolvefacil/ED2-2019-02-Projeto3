@@ -15,6 +15,7 @@
     <logicalFolder name="ResourceFiles"
                    displayName="Arquivos de Recurso"
                    projectFiles="true">
+      <itemPath>SCC0503012019trabalho1b.pdf</itemPath>
       <itemPath>SCC0503012019trabalho3a.pdf</itemPath>
       <itemPath>csv.csv</itemPath>
     </logicalFolder>
@@ -40,6 +41,8 @@
       </toolsSet>
       <compileType>
       </compileType>
+      <item path="SCC0503012019trabalho1b.pdf" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="SCC0503012019trabalho3a.pdf" ex="false" tool="3" flavor2="0">
       </item>
       <item path="csv.csv" ex="false" tool="3" flavor2="0">
@@ -71,6 +74,8 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
+      <item path="SCC0503012019trabalho1b.pdf" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="SCC0503012019trabalho3a.pdf" ex="false" tool="3" flavor2="0">
       </item>
       <item path="csv.csv" ex="false" tool="3" flavor2="0">
