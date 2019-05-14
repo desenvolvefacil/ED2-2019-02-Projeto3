@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include "lista.h"
 
 #define TAMANHO_PAGINA 16000
 #define TAMANHO_REGISTRO 80
@@ -1584,7 +1585,24 @@ void opc7(char * comando) {
  * Função Principal
  */
 int main() {
-
+    
+    LISTA_DINAMICA *lista = criar_lista();
+    
+    inserir_inicio(lista,1);
+    inserir_inicio(lista,2);
+    inserir_inicio(lista,3);
+    inserir_inicio(lista,1);
+    inserir_inicio(lista,2);
+    inserir_inicio(lista,3);
+    
+    
+    imprimir_lista(lista);
+    
+    quickSort(&lista->inicio);
+    
+    imprimir_lista(lista);
+    
+    return 0;
 
     /*char a='@';
     printf("%02X ", a);
