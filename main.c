@@ -36,6 +36,73 @@
 
 #define NULO "NULO"
 
+void escreverDadosEmArquivo(FILE * fileWb, int nroInscricao, double nota, char * data, int tamanhoCidade, char * cidade, int tamanhoEscola, char * nomeEscola) {
+
+    //grava o valor de removido
+    char removido = NAO_REMOVIDO;
+    fwrite(&removido, sizeof (char), 1, fileWb);
+
+    //grava o encadeamento
+    int encadeamento = -1;
+    fwrite(&encadeamento, sizeof (int), 1, fileWb);
+
+
+    fwrite(&nroInscricao, sizeof (int), 1, fileWb);
+
+    //grava no arquivo binario
+    fwrite(&nota, sizeof (nota), 1, fileWb);
+
+    //grava a data no arquivo binario
+    fwrite(&data, sizeof (data), 1, fileWb);
+
+    //pega o tamanho dos campos fixo
+    size_t totalBytes = 27;
+
+
+    if (tamanhoCidade) {
+
+        //salva o tamanho do campo
+        fwrite(&tamanhoCidade, sizeof (int), 1, fileWb);
+
+        //escreve a tag do campo
+        char tagCampoCidade = TAG_CAMPO_CIDADE;
+        fwrite(&tagCampoCidade, sizeof (char), 1, fileWb);
+
+        //escreve a string cidade no arquivo
+        fwrite(cidade, (tamanhoCidade-1), 1, fileWb);
+
+        // int (4)  + tamanhoCidade
+        totalBytes += 4 + tamanhoCidade;
+    }
+
+
+    if (tamanhoEscola) {
+ 
+        //salva o tamanho do campo
+        fwrite(&tamanhoEscola, sizeof (tamanhoEscola), 1, fileWb);
+
+
+        //salva a tag do campo
+        char tagCampoEscola = TAG_CAMPO_ESCOLA;
+        fwrite(&tagCampoEscola, sizeof (char), 1, fileWb);
+
+        fwrite(nomeEscola, (tamanhoEscola-1), 1, fileWb);
+
+        //int tamanho(4) + char tag
+        totalBytes += 4 + tamanhoEscola;
+    }
+
+
+
+    //for para setar @ nos bytes faltantes
+    char arr = '@';
+    int i;
+    for (i = totalBytes; i < TAMANHO_REGISTRO; i++) {
+        fwrite(&arr, 1, 1, fileWb);
+    }
+
+}
+
 void escreverNoEmArquivo(FILE * wbFile, NO * no) {
 
     //grava o valor de removido
@@ -54,7 +121,7 @@ void escreverNoEmArquivo(FILE * wbFile, NO * no) {
 
 
     //grava a data no arquivo binario
-    fwrite(&no->data, 10 , 1, wbFile);
+    fwrite(&no->data, 10, 1, wbFile);
 
     //pega o tamanho dos campos fixo
     size_t totalBytes = 27;
@@ -70,7 +137,7 @@ void escreverNoEmArquivo(FILE * wbFile, NO * no) {
         fwrite(&tagCampoCidade, sizeof (char), 1, wbFile);
 
         //escreve a string cidade no arquivo
-        fwrite(no->cidade, (no->tamanhoCidade-1), 1, wbFile);
+        fwrite(no->cidade, (no->tamanhoCidade - 1), 1, wbFile);
 
         //int (4) + tamanhoCidade
         totalBytes += 4 + no->tamanhoCidade;
@@ -86,7 +153,7 @@ void escreverNoEmArquivo(FILE * wbFile, NO * no) {
         char tagCampoEscola = TAG_CAMPO_ESCOLA;
         fwrite(&tagCampoEscola, sizeof (char), 1, wbFile);
 
-        fwrite(no->nomeEscola, (no->tamanhoEscola-1), 1, wbFile);
+        fwrite(no->nomeEscola, (no->tamanhoEscola - 1), 1, wbFile);
 
         //int (4) + tamanhoEscola
         totalBytes += 4 + no->tamanhoEscola;
@@ -1219,7 +1286,7 @@ void opc6(char * comando) {
                 //int a = 10;
             }
 
-            //começa a escreve os dados no arquivo
+            //começa a escrever os dados no arquivo
             comando = lerComando();
 
 
