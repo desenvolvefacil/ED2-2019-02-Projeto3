@@ -36,17 +36,73 @@
 
 #define NULO "NULO"
 
+void escreverCabecalho(FILE * wbFile) {
+    //escreve os dados do cabecalho
+
+    //grava o status como arquivo aberto pra escrita
+    char status = ARQUIVO_ABERTO_ESCRITA;
+    fwrite(&status, sizeof (status), 1, wbFile);
+
+    //grava o topo da pilha
+    int topoPilha = -1;
+    fwrite(&topoPilha, sizeof (topoPilha), 1, wbFile);
+
+    //grava os dados do campo 1
+    char tagCampo1 = '1';
+    fwrite(&tagCampo1, sizeof (tagCampo1), 1, wbFile);
+
+    char desCampo1[55] = "numero de inscricao do participante do ENEM\0@@@@@@@@@@@";
+    fwrite(&desCampo1, sizeof (desCampo1), 1, wbFile);
+
+    //grava os dados do campo 2
+    char tagCampo2 = '2';
+    fwrite(&tagCampo2, sizeof (tagCampo2), 1, wbFile);
+
+    char desCampo2[55] = "nota do participante do ENEM na prova de matematica\0@@@";
+    fwrite(&desCampo2, sizeof (desCampo2), 1, wbFile);
+
+    //grava os dados do campo 3
+    char tagCampo3 = '3';
+    fwrite(&tagCampo3, sizeof (tagCampo3), 1, wbFile);
+
+    char desCampo3[55] = "data\0@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
+    fwrite(&desCampo3, sizeof (desCampo3), 1, wbFile);
+
+    //grava os dados do campo 4
+    char tagCampo4 = '4';
+    fwrite(&tagCampo4, sizeof (tagCampo4), 1, wbFile);
+
+    char desCampo4[55] = "cidade na qual o participante do ENEM mora\0@@@@@@@@@@@@";
+    fwrite(&desCampo4, sizeof (desCampo4), 1, wbFile);
 
 
+    //grava os dados do campo 4
+    char tagCampo5 = '5';
+    fwrite(&tagCampo5, sizeof (tagCampo5), 1, wbFile);
+
+    char desCampo5[55] = "nome da escola de ensino medio\0@@@@@@@@@@@@@@@@@@@@@@@@";
+    fwrite(&desCampo5, sizeof (desCampo5), 1, wbFile);
+
+    //for para completar com @ e deixar o cabeçalho em uma pagina só
+    int i;
 
 
+    char lixo = '@';
+    // por algum motivo o fwrite so esta escrevendo ate 13000 caracteres por vez
+    for (i = 285; i < TAMANHO_PAGINA; i++) {
+        fwrite(&lixo, 1, 1, wbFile);
+    }
 
+    lixo = NULL;
+
+    //break;
+}
 
 /**
  * Recebe o path de um arquivo binario e mostra em tela
  * @param nomeArquivoBinario
  */
-void escreverNaTela(char *nomeArquivoBinario) {
+void binarioNaTela(char *nomeArquivoBinario) {
 
     /* Escolha essa função se você já fechou o ponteiro de arquivo 'FILE *'.
      *  Ela vai abrir de novo para leitura e depois fechar. */
@@ -119,7 +175,7 @@ void imprimirLinhaEmTela(int nroInscricao, double nota, char * data, char * cida
  * @param nomeEscola
  * @return nroInscricao caso seja lido ou 0 em caso de erro
  */
-int lerLinha(FILE * fileWb, int RRN, char * removido, int * nroInscricao, double * nota, char * data, char * cidade, char * nomeEscola) {
+int lerLinha(FILE * fileWb, int RRN, char * removido, int * nroInscricao, double * nota, char * data, int * tamanhoCidade, char * cidade, int * tamanhoEscola, char * nomeEscola) {
 
     int encadeamento;
 
@@ -172,6 +228,9 @@ int lerLinha(FILE * fileWb, int RRN, char * removido, int * nroInscricao, double
                     //verifica se é uma tagValida
                     if (auxTagCampo == TAG_CAMPO_CIDADE) {
 
+                        //pega o tamanho
+                        *tamanhoCidade = auxTamanho + 1;
+
                         //le o campo cidade
                         fread(cidade, auxTamanho, 1, fileWb);
 
@@ -187,6 +246,7 @@ int lerLinha(FILE * fileWb, int RRN, char * removido, int * nroInscricao, double
                             if (auxTagCampo == TAG_CAMPO_ESCOLA) {
                                 //le o campo escolha
                                 fread(nomeEscola, auxTamanho, 1, fileWb);
+                                *tamanhoEscola = auxTamanho + 1;
                             }
 
                         }
@@ -194,6 +254,7 @@ int lerLinha(FILE * fileWb, int RRN, char * removido, int * nroInscricao, double
                     } else if (auxTagCampo == TAG_CAMPO_ESCOLA) {
                         //le o campo escolha
                         fread(nomeEscola, auxTamanho, 1, fileWb);
+                        *tamanhoEscola = auxTamanho + 1;
                     }
                 }
             }
@@ -398,26 +459,15 @@ void opc1(char * comando) {
                     //for para completar com @ e deixar o cabeçalho em uma pagina só
                     int i;
 
-                    int total = 13000;
-                    char * lixo = calloc(total, sizeof (char));
-
-                    // por algum motivo o fwrite so esta escrevendo ate 13000 caracteres por vez
-                    for (i = 0; i < total; i++) {
-                        lixo[i] = '@';
+                  
+                    char lixo  = '@';
+                    // escreve o lixo no resto do arquivo ate completar uma pagina
+                    for (i = 285; i < TAMANHO_PAGINA; i++) {
+                        fwrite(&lixo, 1, 1, wbFile);
                     }
-
-                    fwrite(&lixo, total, 1, wbFile);
-
-                    //termina de escrever o lixo
-                    total = TAMANHO_PAGINA - total - 285;
-                    fwrite(&lixo, total, 1, wbFile);
-
-                    //libera memoria do lixo
-                    //free(lixo);
-                    lixo = NULL;
-
+                    
                     //break;
-
+                    
                 } else {
                     //grava o valor de removido
                     char removido = NAO_REMOVIDO;
@@ -595,8 +645,11 @@ void opc2(char * comando) {
             char cidade[100] = "\0"; // = NULL;
             char nomeEscola[100] = "\0"; // = NULL;
 
+            int tamanhoCidade = 0;
+            int tamanhoEscola = 0;
+
             //se conseguiu ler a linha
-            if (lerLinha(fileWb, vez, &removido, &nroInscricao, &nota, data, cidade, nomeEscola)) {
+            if (lerLinha(fileWb, vez, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
                 //se o registro não esta removido logicamente
                 if (removido == NAO_REMOVIDO) {
                     imprimirLinhaEmTela(nroInscricao, nota, data, cidade, nomeEscola);
@@ -670,9 +723,11 @@ void opc3(char * comando) {
                 char cidade[100] = "\0"; // = NULL;
                 char nomeEscola[100] = "\0"; // = NULL;
 
+                int tamanhoCidade = 0;
+                int tamanhoEscola = 0;
 
-                if (lerLinha(fileWb, vez, &removido, &nroInscricao, &nota, data, cidade, nomeEscola)) {
-
+                //se conseguiu ler a linha
+                if (lerLinha(fileWb, vez, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
                     if (removido == NAO_REMOVIDO) {
 
 
@@ -786,8 +841,11 @@ void opc4(char * comando) {
             char cidade[100] = "\0"; // = NULL;
             char nomeEscola[100] = "\0"; // = NULL;
 
-            if (lerLinha(fileWb, RRN, &removido, &nroInscricao, &nota, data, cidade, nomeEscola)) {
+            int tamanhoCidade = 0;
+            int tamanhoEscola = 0;
 
+            //se conseguiu ler a linha
+            if (lerLinha(fileWb, RRN, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
                 if (removido == NAO_REMOVIDO) {
                     imprimirLinhaEmTela(nroInscricao, nota, data, cidade, nomeEscola);
                     //2 cabcalho + seek direto pro registro
@@ -818,7 +876,7 @@ void opc4(char * comando) {
 }
 
 /**
- * Esclui registros conforme paramestro informados
+ * Esclui registros conforme parametros informados
  * Entrada Modelo: 
 
 5 arquivoTrab1si.bin 2
@@ -901,8 +959,11 @@ void opc5(char * comando) {
                     int parar = 0;
 
 
-                    if (lerLinha(fileWb, RRN, &removido, &nroInscricao, &nota, data, cidade, nomeEscola)) {
+                    int tamanhoCidade = 0;
+                    int tamanhoEscola = 0;
 
+                    //se conseguiu ler a linha
+                    if (lerLinha(fileWb, RRN, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
                         if (removido == NAO_REMOVIDO) {
 
 
@@ -1019,7 +1080,7 @@ void opc5(char * comando) {
     if (erro) {
         printf("Falha no processamento do arquivo.");
     } else {
-        escreverNaTela(nomeArquivo);
+        binarioNaTela(nomeArquivo);
     }
 }
 
@@ -1257,7 +1318,7 @@ void opc6(char * comando) {
     if (erro) {
         printf("Falha no processamento do arquivo.");
     } else {
-        escreverNaTela(nomeArquivo);
+        binarioNaTela(nomeArquivo);
     }
 }
 
@@ -1326,9 +1387,12 @@ void opc7(char * comando) {
             char cidadeAtual[100] = "\0"; // = NULL;
             char nomeEscolaAtual[100] = "\0"; // = NULL;
 
+            int tamanhoCidade = 0;
+            int tamanhoEscola = 0;
 
             //se conseguiu ler a linha
-            if (lerLinha(fileWb, RRN, &removido, &nroInscricaoAtual, &notaAtual, dataAtual, cidadeAtual, nomeEscolaAtual)) {
+            if (lerLinha(fileWb, RRN, &removido, &nroInscricaoAtual, &notaAtual, dataAtual, &tamanhoCidade, cidadeAtual, &tamanhoEscola, nomeEscolaAtual)) {
+
                 //se o registro não esta removido logicamente
                 if (removido == NAO_REMOVIDO) {
 
@@ -1570,7 +1634,99 @@ void opc7(char * comando) {
     if (erro) {
         printf("Falha no processamento do arquivo.");
     } else {
-        escreverNaTela(nomeArquivo);
+        binarioNaTela(nomeArquivo);
+    }
+}
+
+/**
+ * Realiza a ordenação interna dos dados
+ * Entrada Modelo:
+ 
+8 arquivoTrab1si.bin saida.bin
+
+8 arquivoEntrada.bin arquivoSaida.bin
+ 
+ * @param comando
+ */
+void opc8(char * comando) {
+    char * nomeArquivoEntrada = strsep(&comando, " ");
+    char * nomeArquivoSaida = strsep(&comando, " ");
+
+    //cria a lista para ordenar
+    LISTA *lista = listaCriar();
+
+    //faz a leitura do arquivo de entrada
+    FILE * arquivoEntrada = abrirArquivoBinarioLeitura(nomeArquivoEntrada);
+
+
+    if (arquivoEntrada) {
+
+        int RRN = 0;
+
+        while (!feof(arquivoEntrada)) {
+            char removido;
+            //int encadeamento;
+            int nroInscricao = 0;
+            double nota = -1;
+            char data[11] = "\0";
+            //data[10] = '\0';
+
+            char cidade[100] = "\0"; // = NULL;
+            char nomeEscola[100] = "\0"; // = NULL;
+
+            int tamanhoCidade = 0;
+            int tamanhoEscola = 0;
+
+            //se conseguiu ler a linha
+            if (lerLinha(arquivoEntrada, RRN, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
+                //se o registro não esta removido logicamente
+                if (removido == NAO_REMOVIDO) {
+                    listaInserirInicio(lista, nroInscricao, nota, data, tamanhoCidade, cidade, tamanhoEscola, nomeEscola);
+                }
+            }
+
+            RRN++;
+        }
+
+        //fecha o arquivo
+        fclose(arquivoEntrada);
+
+        //listaImprimir(lista);
+
+        qsOrdernarLista(&lista->inicio);
+
+        //listaImprimir(lista);
+
+        //cria o novo arquivo
+        FILE * arquivoSaida = fopen(nomeArquivoSaida, "wb");
+
+        if (arquivoSaida) {
+            //escreve o cabecalho
+            escreverCabecalho(arquivoSaida);
+
+            //escreve a lista ordenada no arquivo
+            NO * aux = lista->inicio;
+
+            while (aux != NULL) {
+
+                aux = aux->proximo;
+            }
+
+            //fecha o arquivo binario
+            fecharArquivoBinarioEscrita(arquivoSaida);
+
+            //apaga a lista
+            listaApagar(lista);
+
+            binarioNaTela(nomeArquivoSaida);
+            
+        } else {
+            printf("Falha no processamento do arquivo.");
+        }
+
+
+    } else {
+        printf("Falha no processamento do arquivo.");
     }
 }
 
@@ -1578,27 +1734,27 @@ void opc7(char * comando) {
  * Função Principal
  */
 int main() {
-    
-    LISTA *lista = listaCriar();
-    
-    listarInserirInicio(lista,1);
-    listarInserirInicio(lista,2);
-    listarInserirInicio(lista,3);
-    listarInserirInicio(lista,4);
-    listarInserirInicio(lista,5);
-    listarInserirInicio(lista,6);
-    
-    
-    listarImprimir(lista);
-    
-    qsOrdernarLista(&lista->inicio);
-    
-    listarImprimir(lista);
+    /*
+        LISTA *lista = listaCriar();
 
-    listarApagar(lista);
-    
-    return 0;
+        listarInserirInicio(lista, 1, -1, "a", 1, "a", 1, "a");
+        listarInserirInicio(lista, 2, -1, "b", 2, "b", 2, "b");
+        listarInserirInicio(lista, 3, -1, "", 0, "", 0, "");
+        listarInserirInicio(lista, 4, -1, "", 0, "", 0, "");
+        listarInserirInicio(lista, 5, -1, "", 0, "", 0, "");
+        listarInserirInicio(lista, 6, -1, "", 0, "", 0, "");
 
+
+        listarImprimir(lista);
+
+        qsOrdernarLista(&lista->inicio);
+
+        listarImprimir(lista);
+
+        listarApagar(lista);
+
+        return 0;
+     */
     /*char a='@';
     printf("%02X ", a);
     exit(0);*/
@@ -1665,10 +1821,15 @@ int main() {
             opc7(comando);
             break;
         }
+        case 8:
+        {
+            opc8(comando);
+            break;
+        }
         case 99:
         {
             char * nomeArquivo = strsep(&comando, " ");
-            escreverNaTela(nomeArquivo);
+            binarioNaTela(nomeArquivo);
 
             break;
         }

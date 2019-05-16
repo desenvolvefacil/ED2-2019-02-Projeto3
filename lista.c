@@ -7,6 +7,7 @@
 #include "lista.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 LISTA *listaCriar(void) {
     LISTA *lista = (LISTA *) malloc(sizeof (LISTA));
@@ -16,10 +17,22 @@ LISTA *listaCriar(void) {
     return lista;
 }
 
-int listarInserirInicio(LISTA *lista, int nroInscricao) {
+int listaInserirInicio(LISTA *lista, int nroInscricao, double nota, char data[11], int tamanhoCidade, char cidade[100], int tamanhoEscola, char nomeEscola[100]) {
 
     NO *no_novo = (NO *) malloc(sizeof (NO));
+
     no_novo->nroInscricao = nroInscricao;
+    no_novo->nota=nota;
+    strncpy(no_novo->data,data,10);
+    no_novo->tamanhoCidade = tamanhoCidade;
+    if(tamanhoCidade){
+        strncpy(no_novo->cidade,cidade,(tamanhoCidade-1));
+    }
+    no_novo->tamanhoEscola = tamanhoEscola;
+    if(tamanhoEscola){
+        strncpy(no_novo->nomeEscola,nomeEscola,(tamanhoEscola-1));
+    }
+
     no_novo->proximo = lista->inicio;
 
     lista->inicio = no_novo;
@@ -27,20 +40,22 @@ int listarInserirInicio(LISTA *lista, int nroInscricao) {
     return 1;
 }
 
-void listarImprimir(LISTA *lista) {
+void listaImprimir(LISTA *lista) {
 
     if (lista != NULL) {
         NO *no = lista->inicio;
         while (no != NULL) {
             printf("[%d]-> ", no->nroInscricao);
-
+            
+            //printf("%lf %s %d %s %d %s" ,no->nota,no->data,no->tamanhoCidade,no->cidade,no->tamanhoEscola,no->nomeEscola);
+            
             no = no->proximo;
         }
     }
     printf("\n");
 }
 
-void listarApagar(LISTA*lista) {
+void listaApagar(LISTA*lista) {
     if (lista != NULL) {
         NO *cabeca = lista->inicio;
 
@@ -56,7 +71,6 @@ void listarApagar(LISTA*lista) {
     }
 }
 
-
 /*******
  * 
  * 
@@ -66,7 +80,7 @@ void listarApagar(LISTA*lista) {
  * */
 
 
-NO *qsUltimoNo(NO *cur) {
+NO *qsUltimoNo(NO * cur) {
     while (cur != NULL && cur->proximo != NULL)
         cur = cur->proximo;
     return cur;
@@ -86,8 +100,7 @@ NO *qsParticionar(NO *incio, NO *fim, NO **novoInicio, NO **novoFim) {
 
             prev = cur;
             cur = cur->proximo;
-        } else
-        {
+        } else {
             // Mover o nó cur para a próxima cauda e mudar a cauda
             if (prev) {
                 prev->proximo = cur->proximo;
@@ -107,7 +120,7 @@ NO *qsParticionar(NO *incio, NO *fim, NO **novoInicio, NO **novoFim) {
     // atualiza o novoFim para o último nó atual
     (*novoFim) = cauda;
 
-  
+
     return pivot;
 }
 
@@ -123,7 +136,7 @@ NO *qsRecursao(NO *inicio, NO *fim) {
     // pela função de partição
     NO *pivot = qsParticionar(inicio, fim, &novoInicio, &novoFim);
 
-    
+
     // Se pivot é o menor elemento - não há necessidade de de chamar a recursão par ao lado esquerdo do pivo.
     if (novoInicio != pivot) {
         //Definir o nó antes do nó tmp como NULL

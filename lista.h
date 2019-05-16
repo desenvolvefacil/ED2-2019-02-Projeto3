@@ -36,11 +36,11 @@ typedef struct {
  *******************************************************************/
 LISTA *listaCriar(void);
 
-int listarInserirInicio(LISTA *lista, int item);
+int listaInserirInicio(LISTA *lista, int nroInscricao, double nota, char data[11], int tamanhoCidade, char cidade[100], int tamanhoEscola, char nomeEscola[100]);
 
-void listarImprimir(LISTA *lista);
+void listaImprimir(LISTA *lista);
 
-void listarApagar(LISTA *lista);
+void listaApagar(LISTA *lista);
 
 /******************************************************************
  * Metodos do Quick Sort
