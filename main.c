@@ -36,6 +36,72 @@
 
 #define NULO "NULO"
 
+void escreverNoEmArquivo(FILE * wbFile, NO * no) {
+
+    //grava o valor de removido
+    char removido = NAO_REMOVIDO;
+    fwrite(&removido, sizeof (removido), 1, wbFile);
+
+    //grava o encadeamento
+    int encadeamento = -1;
+    fwrite(&encadeamento, sizeof (int), 1, wbFile);
+
+    //grava no arquivo binario
+    fwrite(&no->nroInscricao, sizeof (int), 1, wbFile);
+
+    //grava no arquivo binario
+    fwrite(&no->nota, sizeof (double), 1, wbFile);
+
+
+    //grava a data no arquivo binario
+    fwrite(&no->data, 10 , 1, wbFile);
+
+    //pega o tamanho dos campos fixo
+    size_t totalBytes = 27;
+
+
+    if (no->tamanhoCidade) {
+
+        //salva o tamanho do campo
+        fwrite(&no->tamanhoCidade, sizeof (int), 1, wbFile);
+
+        //escreve a tag do campo
+        char tagCampoCidade = TAG_CAMPO_CIDADE;
+        fwrite(&tagCampoCidade, sizeof (char), 1, wbFile);
+
+        //escreve a string cidade no arquivo
+        fwrite(no->cidade, (no->tamanhoCidade-1), 1, wbFile);
+
+        //int (4) + tamanhoCidade
+        totalBytes += 4 + no->tamanhoCidade;
+    }
+
+
+    if (no->tamanhoEscola) {
+
+        //salva o tamanho do campo
+        fwrite(&no->tamanhoEscola, sizeof (int), 1, wbFile);
+
+        //salva a tag do campo
+        char tagCampoEscola = TAG_CAMPO_ESCOLA;
+        fwrite(&tagCampoEscola, sizeof (char), 1, wbFile);
+
+        fwrite(no->nomeEscola, (no->tamanhoEscola-1), 1, wbFile);
+
+        //int (4) + tamanhoEscola
+        totalBytes += 4 + no->tamanhoEscola;
+    }
+
+
+    char lixo = '@';
+    //for para setar @ nos bytes faltantes
+    for (; totalBytes < TAMANHO_REGISTRO; totalBytes++) {
+        fwrite(&lixo, 1, 1, wbFile);
+    }
+
+
+}
+
 void escreverCabecalho(FILE * wbFile) {
     //escreve os dados do cabecalho
 
@@ -93,7 +159,6 @@ void escreverCabecalho(FILE * wbFile) {
         fwrite(&lixo, 1, 1, wbFile);
     }
 
-    lixo = NULL;
 
     //break;
 }
@@ -459,15 +524,15 @@ void opc1(char * comando) {
                     //for para completar com @ e deixar o cabeçalho em uma pagina só
                     int i;
 
-                  
-                    char lixo  = '@';
+
+                    char lixo = '@';
                     // escreve o lixo no resto do arquivo ate completar uma pagina
                     for (i = 285; i < TAMANHO_PAGINA; i++) {
                         fwrite(&lixo, 1, 1, wbFile);
                     }
-                    
+
                     //break;
-                    
+
                 } else {
                     //grava o valor de removido
                     char removido = NAO_REMOVIDO;
@@ -1709,6 +1774,8 @@ void opc8(char * comando) {
 
             while (aux != NULL) {
 
+                escreverNoEmArquivo(arquivoSaida, aux);
+
                 aux = aux->proximo;
             }
 
@@ -1719,7 +1786,7 @@ void opc8(char * comando) {
             listaApagar(lista);
 
             binarioNaTela(nomeArquivoSaida);
-            
+
         } else {
             printf("Falha no processamento do arquivo.");
         }
