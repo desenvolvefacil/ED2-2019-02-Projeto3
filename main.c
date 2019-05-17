@@ -54,7 +54,12 @@ void escreverDadosEmArquivo(FILE * fileWb, int nroInscricao, double nota, char *
     fwrite(&nota, sizeof (nota), 1, fileWb);
 
     //grava a data no arquivo binario
-    fwrite(&data, sizeof (data), 1, fileWb);
+    if (strlen(data) > 0) {
+        fwrite(data, 10, 1, fileWb);
+    } else {
+        char aux[10] = "\0@@@@@@@@@";
+        fwrite(&aux, 10, 1, fileWb);
+    }
 
     //pega o tamanho dos campos fixo
     size_t totalBytes = 27;
@@ -120,9 +125,17 @@ void escreverNoEmArquivo(FILE * wbFile, NO * no) {
     //grava no arquivo binario
     fwrite(&no->nota, sizeof (double), 1, wbFile);
 
-
     //grava a data no arquivo binario
-    fwrite(&no->data, 10, 1, wbFile);
+    if (strlen(no->data) > 0) {
+        fwrite(&no->data, 10, 1, wbFile);
+    } else {
+        char aux[10] = "\0@@@@@@@@@";
+        fwrite(&aux, 10, 1, wbFile);
+    }
+
+
+
+
 
     //pega o tamanho dos campos fixo
     size_t totalBytes = 27;
@@ -1879,24 +1892,24 @@ void opc9(char * comando) {
 
     char * nomeArq1 = strsep(&comando, " ");
 
-    FILE arq1 = abrirArquivoBinarioLeitura(nomeArq1);
+    FILE * arq1 = abrirArquivoBinarioLeitura(nomeArq1);
 
     if (arq1) {
 
         char * nomeArq2 = strsep(&comando, " ");
 
-        FILE arq2 = abrirArquivoBinarioLeitura(nomeArq1);
+        FILE * arq2 = abrirArquivoBinarioLeitura(nomeArq2);
 
         if (arq2) {
 
             char * nomeArquivoSaida = strsep(&comando, " ");
 
-            FILE arqSaida = fopen(nomeArquivoSaida, "wb");
+            FILE * arqSaida = fopen(nomeArquivoSaida, "wb");
+            //escreve o cabeçalho
+            escreverCabecalho(arqSaida);
 
             int RRN1 = 0, RRN2 = 0;
 
-            //verifica se anda o ponteiro no arquivo
-            int andar1 = 1, andar2 = 1;
 
             //enquanto não chegar no fim dos dois arquivos
             while (!feof(arq1) && !feof(arq2)) {
@@ -1913,33 +1926,99 @@ void opc9(char * comando) {
                 int tamanhoCidade1 = 0, tamanhoCidade2 = 0;
                 int tamanhoEscola1 = 0, tamanhoEscola2 = 0;
 
-                if (andar1 && lerLinha(arq1, RRN1, &removido1, &nroInscricao1, &nota1, data1, &tamanhoCidade1, cidade1, &tamanhoEscola1, nomeEscola1)) {
-                    RRN1++;
-                    andar1 = 0;
+                if (lerLinha(arq1, RRN1, &removido1, &nroInscricao1, &nota1, data1, &tamanhoCidade1, cidade1, &tamanhoEscola1, nomeEscola1)) {
+
+
                 }
 
-                if (andar2 && lerLinha(arq2, RRN2, &removido2, &nroInscricao2, &nota2, data2, &tamanhoCidade2, cidade2, &tamanhoEscola2, nomeEscola2)) {
-                    RRN2++;
-                    andar2 = 0;
+                if (lerLinha(arq2, RRN2, &removido2, &nroInscricao2, &nota2, data2, &tamanhoCidade2, cidade2, &tamanhoEscola2, nomeEscola2)) {
+
+
                 }
 
                 if (removido1 == REMOVIDO) {
-                    andar1 = 1;
+                    RRN1++;
                 }
                 if (removido2 == REMOVIDO) {
-                    andar2 = 1;
+                    RRN2++;
                 }
 
                 if (removido1 == NAO_REMOVIDO && removido2 == NAO_REMOVIDO) {
+                    if (nroInscricao1 < nroInscricao2) {
 
+                        escreverDadosEmArquivo(arqSaida, nroInscricao1, nota1, data1, tamanhoCidade1, cidade1, tamanhoEscola1, nomeEscola1);
+
+                        RRN1++;
+
+                    } else if (nroInscricao1 == nroInscricao2) {
+
+                        escreverDadosEmArquivo(arqSaida, nroInscricao1, nota1, data1, tamanhoCidade1, cidade1, tamanhoEscola1, nomeEscola1);
+
+                        RRN1++;
+                        RRN2++;
+
+                    } else {
+
+                        escreverDadosEmArquivo(arqSaida, nroInscricao2, nota2, data2, tamanhoCidade2, cidade2, tamanhoEscola2, nomeEscola2);
+
+                        RRN2++;
+
+                    }
                 }
 
             }
 
+            //se ainda sobrou dados no arquivo1
+            while (!feof(arq1)) {
+                char removido;
+                int nroInscricao = 0;
+                double nota = -1;
+                char data[11] = "\0";
+                //data[10] = '\0';
+
+                char cidade[100] = "\0"; // = NULL;
+                char nomeEscola[100] = "\0"; // = NULL;
+
+                int tamanhoCidade = 0;
+                int tamanhoEscola = 0;
+
+                if (lerLinha(arq1, RRN1, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
+                    if (removido == NAO_REMOVIDO) {
+                        escreverDadosEmArquivo(arqSaida, nroInscricao, nota, data, tamanhoCidade, cidade, tamanhoEscola, nomeEscola);
+                    }
+                }
+
+                RRN1++;
+            }
+
+            //se ainda sobrou dados no arquivo 2
+            while (!feof(arq2)) {
+                char removido;
+                int nroInscricao = 0;
+                double nota = -1;
+                char data[11] = "\0";
+                //data[10] = '\0';
+
+                char cidade[100] = "\0"; // = NULL;
+                char nomeEscola[100] = "\0"; // = NULL;
+
+                int tamanhoCidade = 0;
+                int tamanhoEscola = 0;
+
+                if (lerLinha(arq2, RRN2, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
+                    if (removido == NAO_REMOVIDO) {
+                        escreverDadosEmArquivo(arqSaida, nroInscricao, nota, data, tamanhoCidade, cidade, tamanhoEscola, nomeEscola);
+                    }
+                }
+
+                RRN2++;
+            }
 
             fclose(arq1);
             fclose(arq2);
-            fclose(arqSaida);
+            fecharArquivoBinarioEscrita(arqSaida);
+
+            binarioNaTela(nomeArquivoSaida);
         } else {
             printf(MSG_ERRO);
         }
