@@ -26,6 +26,7 @@
 #define TAG_CAMPO_ESCOLA '5'
 #define ARQUIVO_ABERTO_ESCRITA '0'
 #define ARQUIVO_FECHADO_ESCRITA '1'
+#define MSG_ERRO "Falha no processamento do arquivo."
 
 //nome dos campos para comparacao
 #define NRO_INSCRICAO "nroInscricao"
@@ -69,7 +70,7 @@ void escreverDadosEmArquivo(FILE * fileWb, int nroInscricao, double nota, char *
         fwrite(&tagCampoCidade, sizeof (char), 1, fileWb);
 
         //escreve a string cidade no arquivo
-        fwrite(cidade, (tamanhoCidade-1), 1, fileWb);
+        fwrite(cidade, (tamanhoCidade - 1), 1, fileWb);
 
         // int (4)  + tamanhoCidade
         totalBytes += 4 + tamanhoCidade;
@@ -77,7 +78,7 @@ void escreverDadosEmArquivo(FILE * fileWb, int nroInscricao, double nota, char *
 
 
     if (tamanhoEscola) {
- 
+
         //salva o tamanho do campo
         fwrite(&tamanhoEscola, sizeof (tamanhoEscola), 1, fileWb);
 
@@ -86,7 +87,7 @@ void escreverDadosEmArquivo(FILE * fileWb, int nroInscricao, double nota, char *
         char tagCampoEscola = TAG_CAMPO_ESCOLA;
         fwrite(&tagCampoEscola, sizeof (char), 1, fileWb);
 
-        fwrite(nomeEscola, (tamanhoEscola-1), 1, fileWb);
+        fwrite(nomeEscola, (tamanhoEscola - 1), 1, fileWb);
 
         //int tamanho(4) + char tag
         totalBytes += 4 + tamanhoEscola;
@@ -809,7 +810,7 @@ void opc2(char * comando) {
 
         printf("Número de páginas de disco acessadas: %d", totalPaginasAcessadas);
     } else {
-        printf("Falha no processamento do arquivo.");
+        printf(MSG_ERRO);
     }
 }
 
@@ -939,7 +940,7 @@ void opc3(char * comando) {
 
 
     if (erro) {
-        printf("Falha no processamento do arquivo.");
+        printf(MSG_ERRO);
     }
 }
 
@@ -1002,7 +1003,7 @@ void opc4(char * comando) {
     }
 
     if (erro) {
-        printf("Falha no processamento do arquivo.");
+        printf(MSG_ERRO);
     }
 
 }
@@ -1210,7 +1211,7 @@ void opc5(char * comando) {
     }
 
     if (erro) {
-        printf("Falha no processamento do arquivo.");
+        printf(MSG_ERRO);
     } else {
         binarioNaTela(nomeArquivo);
     }
@@ -1448,7 +1449,7 @@ void opc6(char * comando) {
 
 
     if (erro) {
-        printf("Falha no processamento do arquivo.");
+        printf(MSG_ERRO);
     } else {
         binarioNaTela(nomeArquivo);
     }
@@ -1764,7 +1765,7 @@ void opc7(char * comando) {
 
 
     if (erro) {
-        printf("Falha no processamento do arquivo.");
+        printf(MSG_ERRO);
     } else {
         binarioNaTela(nomeArquivo);
     }
@@ -1855,13 +1856,98 @@ void opc8(char * comando) {
             binarioNaTela(nomeArquivoSaida);
 
         } else {
-            printf("Falha no processamento do arquivo.");
+            printf(MSG_ERRO);
         }
 
 
     } else {
-        printf("Falha no processamento do arquivo.");
+        printf(MSG_ERRO);
     }
+}
+
+/**
+ * Realize a operação cosequencial de merging (união) de dois arquivos de dados,
+ * considerando os valores do campo nroInscricao
+ * 
+ * Entrada Modelo:
+ 
+9 arquivoEntrada1.bin arquivoEntrada2.bin arquivoSaida.bin
+ 
+ * @param comando
+ */
+void opc9(char * comando) {
+
+    char * nomeArq1 = strsep(&comando, " ");
+
+    FILE arq1 = abrirArquivoBinarioLeitura(nomeArq1);
+
+    if (arq1) {
+
+        char * nomeArq2 = strsep(&comando, " ");
+
+        FILE arq2 = abrirArquivoBinarioLeitura(nomeArq1);
+
+        if (arq2) {
+
+            char * nomeArquivoSaida = strsep(&comando, " ");
+
+            FILE arqSaida = fopen(nomeArquivoSaida, "wb");
+
+            int RRN1 = 0, RRN2 = 0;
+
+            //verifica se anda o ponteiro no arquivo
+            int andar1 = 1, andar2 = 1;
+
+            //enquanto não chegar no fim dos dois arquivos
+            while (!feof(arq1) && !feof(arq2)) {
+                char removido1, removido2;
+                //int encadeamento;
+                int nroInscricao1 = 0, nroInscricao2 = 0;
+                double nota1 = -1, nota2 = -1;
+                char data1[11] = "\0", data2[11];
+                //data[10] = '\0';
+
+                char cidade1[100] = "\0", cidade2[100] = "\0"; // = NULL;
+                char nomeEscola1[100] = "\0", nomeEscola2[100] = "\0"; // = NULL;
+
+                int tamanhoCidade1 = 0, tamanhoCidade2 = 0;
+                int tamanhoEscola1 = 0, tamanhoEscola2 = 0;
+
+                if (andar1 && lerLinha(arq1, RRN1, &removido1, &nroInscricao1, &nota1, data1, &tamanhoCidade1, cidade1, &tamanhoEscola1, nomeEscola1)) {
+                    RRN1++;
+                    andar1 = 0;
+                }
+
+                if (andar2 && lerLinha(arq2, RRN2, &removido2, &nroInscricao2, &nota2, data2, &tamanhoCidade2, cidade2, &tamanhoEscola2, nomeEscola2)) {
+                    RRN2++;
+                    andar2 = 0;
+                }
+
+                if (removido1 == REMOVIDO) {
+                    andar1 = 1;
+                }
+                if (removido2 == REMOVIDO) {
+                    andar2 = 1;
+                }
+
+                if (removido1 == NAO_REMOVIDO && removido2 == NAO_REMOVIDO) {
+
+                }
+
+            }
+
+
+            fclose(arq1);
+            fclose(arq2);
+            fclose(arqSaida);
+        } else {
+            printf(MSG_ERRO);
+        }
+
+    } else {
+        printf(MSG_ERRO);
+    }
+
 }
 
 /*
@@ -1958,6 +2044,11 @@ int main() {
         case 8:
         {
             opc8(comando);
+            break;
+        }
+        case 9:
+        {
+            opc9(comando);
             break;
         }
         case 99:
