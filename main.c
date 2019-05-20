@@ -2029,6 +2029,102 @@ void opc9(char * comando) {
 
 }
 
+
+/**
+ * Realize a operação cosequencial de matching (interesecção) de dois arquivos de dados,
+ * considerando os valores do campo nroInscricao
+ * 
+ * Entrada Modelo:
+  
+10 arquivoEntrada1.bin arquivoEntrada2.bin arquivoSaida.bin
+ 
+ * @param comando
+ */
+void opc10(char * comando) {
+    char * nomeArq1 = strsep(&comando, " ");
+
+    FILE * arq1 = abrirArquivoBinarioLeitura(nomeArq1);
+
+    if (arq1) {
+
+        char * nomeArq2 = strsep(&comando, " ");
+
+        FILE * arq2 = abrirArquivoBinarioLeitura(nomeArq2);
+
+        if (arq2) {
+
+            char * nomeArquivoSaida = strsep(&comando, " ");
+
+            FILE * arqSaida = fopen(nomeArquivoSaida, "wb");
+            //escreve o cabeçalho
+            escreverCabecalho(arqSaida);
+
+            int RRN1 = 0, RRN2 = 0;
+
+
+            //enquanto não chegar no fim dos dois arquivos
+            while (!feof(arq1) && !feof(arq2)) {
+                char removido1, removido2;
+                //int encadeamento;
+                int nroInscricao1 = 0, nroInscricao2 = 0;
+                double nota1 = -1, nota2 = -1;
+                char data1[11] = "\0", data2[11];
+                //data[10] = '\0';
+
+                char cidade1[100] = "\0", cidade2[100] = "\0"; // = NULL;
+                char nomeEscola1[100] = "\0", nomeEscola2[100] = "\0"; // = NULL;
+
+                int tamanhoCidade1 = 0, tamanhoCidade2 = 0;
+                int tamanhoEscola1 = 0, tamanhoEscola2 = 0;
+
+                if (lerLinha(arq1, RRN1, &removido1, &nroInscricao1, &nota1, data1, &tamanhoCidade1, cidade1, &tamanhoEscola1, nomeEscola1)) {
+
+
+                }
+
+                if (lerLinha(arq2, RRN2, &removido2, &nroInscricao2, &nota2, data2, &tamanhoCidade2, cidade2, &tamanhoEscola2, nomeEscola2)) {
+
+
+                }
+
+                if (removido1 == REMOVIDO) {
+                    RRN1++;
+                }
+                if (removido2 == REMOVIDO) {
+                    RRN2++;
+                }
+
+                if (removido1 == NAO_REMOVIDO && removido2 == NAO_REMOVIDO) {
+                    if (nroInscricao1 < nroInscricao2) {
+                        RRN1++;
+                    } else if (nroInscricao1 == nroInscricao2) {
+
+                        escreverDadosEmArquivo(arqSaida, nroInscricao1, nota1, data1, tamanhoCidade1, cidade1, tamanhoEscola1, nomeEscola1);
+
+                        RRN1++;
+                        RRN2++;
+
+                    } else {
+                        RRN2++;
+                    }
+                }
+
+            }
+            
+            fclose(arq1);
+            fclose(arq2);
+            fecharArquivoBinarioEscrita(arqSaida);
+
+            binarioNaTela(nomeArquivoSaida);
+        } else {
+            printf(MSG_ERRO);
+        }
+
+    } else {
+        printf(MSG_ERRO);
+    }
+}
+
 /*
  * Função Principal
  */
@@ -2129,6 +2225,10 @@ int main() {
         {
             opc9(comando);
             break;
+        }
+        case 10:{
+            opc10(comando);
+         break;   
         }
         case 99:
         {
