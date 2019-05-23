@@ -4,22 +4,22 @@
  * and open the template in the editor.
  */
 
-#include "lista.h"
+#include "listaarq.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-LISTA *listaCriar(void) {
-    LISTA *lista = (LISTA *) malloc(sizeof (LISTA));
+LISTAARQ *listaArqCriar(void) {
+    LISTAARQ *lista = (LISTAARQ *) malloc(sizeof (LISTAARQ));
 
     lista->inicio = NULL;
 
     return lista;
 }
 
-int listaInserirInicio(LISTA *lista, int nroInscricao, double nota, char data[11], int tamanhoCidade, char cidade[100], int tamanhoEscola, char nomeEscola[100]) {
+int listaArqInserirInicio(LISTAARQ *lista, int nroInscricao, double nota, char data[11], int tamanhoCidade, char cidade[100], int tamanhoEscola, char nomeEscola[100]) {
 
-    NO *no_novo = (NO *) malloc(sizeof (NO));
+    NOARQ *no_novo = (NOARQ *) malloc(sizeof (NOARQ));
 
     no_novo->nroInscricao = nroInscricao;
     no_novo->nota=nota;
@@ -40,10 +40,10 @@ int listaInserirInicio(LISTA *lista, int nroInscricao, double nota, char data[11
     return 1;
 }
 
-void listaImprimir(LISTA *lista) {
+void listaArqImprimir(LISTAARQ *lista) {
 
     if (lista != NULL) {
-        NO *no = lista->inicio;
+        NOARQ *no = lista->inicio;
         while (no != NULL) {
             printf("[%d]-> ", no->nroInscricao);
             
@@ -55,12 +55,12 @@ void listaImprimir(LISTA *lista) {
     printf("\n");
 }
 
-void listaApagar(LISTA*lista) {
+void listaArqApagar(LISTAARQ*lista) {
     if (lista != NULL) {
-        NO *cabeca = lista->inicio;
+        NOARQ *cabeca = lista->inicio;
 
         while (cabeca != NULL) {
-            NO *aux = cabeca;
+            NOARQ *aux = cabeca;
             cabeca = cabeca->proximo;
 
             free(aux);
@@ -80,15 +80,15 @@ void listaApagar(LISTA*lista) {
  * */
 
 
-NO *qsUltimoNo(NO * cur) {
+NOARQ *qsArqUltimoNo(NOARQ * cur) {
     while (cur != NULL && cur->proximo != NULL)
         cur = cur->proximo;
     return cur;
 }
 
-NO *qsParticionar(NO *incio, NO *fim, NO **novoInicio, NO **novoFim) {
-    NO *pivot = fim;
-    NO *prev = NULL, *cur = incio, *cauda = pivot;
+NOARQ *qsArqParticionar(NOARQ *incio, NOARQ *fim, NOARQ **novoInicio, NOARQ **novoFim) {
+    NOARQ *pivot = fim;
+    NOARQ *prev = NULL, *cur = incio, *cauda = pivot;
 
     // Durante a partição, tanto o inio como o final da lista podem mudar
     // valores atualizados nas variáveis novoInicio e novoFim
@@ -105,7 +105,7 @@ NO *qsParticionar(NO *incio, NO *fim, NO **novoInicio, NO **novoFim) {
             if (prev) {
                 prev->proximo = cur->proximo;
             }
-            NO *tmp = cur->proximo;
+            NOARQ *tmp = cur->proximo;
             cur->proximo = NULL;
             cauda->proximo = cur;
             cauda = cur;
@@ -124,42 +124,42 @@ NO *qsParticionar(NO *incio, NO *fim, NO **novoInicio, NO **novoFim) {
     return pivot;
 }
 
-NO *qsRecursao(NO *inicio, NO *fim) {
+NOARQ *qsArqRecursao(NOARQ *inicio, NOARQ *fim) {
     //condição para rodar o metodo
     if (!inicio || inicio == fim) {
         return inicio;
     }
 
-    NO *novoInicio = NULL, *novoFim = NULL;
+    NOARQ *novoInicio = NULL, *novoFim = NULL;
 
     // Particiona a lista, novoInicio e novoFim serão atualizados
     // pela função de partição
-    NO *pivot = qsParticionar(inicio, fim, &novoInicio, &novoFim);
+    NOARQ *pivot = qsArqParticionar(inicio, fim, &novoInicio, &novoFim);
 
 
     // Se pivot é o menor elemento - não há necessidade de de chamar a recursão par ao lado esquerdo do pivo.
     if (novoInicio != pivot) {
         //Definir o nó antes do nó tmp como NULL
-        NO *tmp = novoInicio;
+        NOARQ *tmp = novoInicio;
         while (tmp->proximo != pivot)
             tmp = tmp->proximo;
         tmp->proximo = NULL;
 
         //chama o metodo recursivo para sublista antes do pivot
-        novoInicio = qsRecursao(novoInicio, tmp);
+        novoInicio = qsArqRecursao(novoInicio, tmp);
 
         // Altera o próximo do último nó da metade esquerda para girar
-        tmp = qsUltimoNo(novoInicio);
+        tmp = qsArqUltimoNo(novoInicio);
         tmp->proximo = pivot;
     }
 
     //chama o metodo recursivo para sublista após do pivot
-    pivot->proximo = qsRecursao(pivot->proximo, novoFim);
+    pivot->proximo = qsArqRecursao(pivot->proximo, novoFim);
 
     return novoInicio;
 }
 
-void qsOrdernarLista(NO **inicio) {
-    (*inicio) = qsRecursao(*inicio, qsUltimoNo(*inicio));
+void qsArqOrdernarLista(NOARQ **inicio) {
+    (*inicio) = qsArqRecursao(*inicio, qsArqUltimoNo(*inicio));
     return;
 }

@@ -11,8 +11,8 @@
  * Created on 14 de Maio de 2019, 13:35
  */
 
-#ifndef LISTA_H
-#define LISTA_H
+#ifndef LISTAARQ_H
+#define LISTAARQ_H
 
 /* substitua "elemento" pelo tipo de dado utilizado */
 typedef struct node {
@@ -25,22 +25,22 @@ typedef struct node {
     char nomeEscola[100];
 
     struct node *proximo;
-} NO;
+} NOARQ;
 
 typedef struct {
-    NO *inicio;
-} LISTA;
+    NOARQ *inicio;
+} LISTAARQ;
 
 /********************************************************************
  * Metodos da Lista
  *******************************************************************/
-LISTA *listaCriar(void);
+LISTAARQ *listaArqCriar(void);
 
-int listaInserirInicio(LISTA *lista, int nroInscricao, double nota, char data[11], int tamanhoCidade, char cidade[100], int tamanhoEscola, char nomeEscola[100]);
+int listaArqInserirInicio(LISTAARQ *lista, int nroInscricao, double nota, char data[11], int tamanhoCidade, char cidade[100], int tamanhoEscola, char nomeEscola[100]);
 
-void listaImprimir(LISTA *lista);
+void listaArqImprimir(LISTAARQ *lista);
 
-void listaApagar(LISTA *lista);
+void listaArqApagar(LISTAARQ *lista);
 
 /******************************************************************
  * Metodos do Quick Sort
@@ -52,7 +52,7 @@ void listaApagar(LISTA *lista);
  * @param cur
  * @return 
  */
-NO * qsUltimoNo(NO *cur);
+NOARQ * qsArqUltimoNo(NOARQ *cur);
 
 /**
  * Particiona a lista tomando o último elemento como o pivo
@@ -62,7 +62,7 @@ NO * qsUltimoNo(NO *cur);
  * @param novoFim
  * @return retorna o novo pivot
  */
-NO * qsParticionar(NO *inicio, NO *fim, NO **novoInicio, NO **novoFim);
+NOARQ * qsArqParticionar(NOARQ *inicio, NOARQ *fim, NOARQ **novoInicio, NOARQ **novoFim);
 
 /**
  * Faz a classificação exclusiva do no final
@@ -70,14 +70,14 @@ NO * qsParticionar(NO *inicio, NO *fim, NO **novoInicio, NO **novoFim);
  * @param fim
  * @return novo inicio da lista
  */
-NO * qsRecursao(NO *inicio, NO *fim);
+NOARQ * qsArqRecursao(NOARQ *inicio, NOARQ *fim);
 
 /**
  * Função para ordenar uma lista
  * @param cabeca da lista
  */
-void qsOrdernarLista(NO **cabeca);
+void qsArqOrdernarLista(NOARQ **cabeca);
 
 
-#endif /* LISTA_H */
+#endif /* LISTAARQ_H */
 

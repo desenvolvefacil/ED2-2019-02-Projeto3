@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
-#include "lista.h"
+#include "listaarq.h"
 
 #define TAMANHO_PAGINA 16000
 #define TAMANHO_REGISTRO 80
@@ -27,6 +27,8 @@
 #define ARQUIVO_ABERTO_ESCRITA '0'
 #define ARQUIVO_FECHADO_ESCRITA '1'
 #define MSG_ERRO "Falha no processamento do arquivo."
+#define MODO_ESCRITA "wb"
+#define MODO_EDICAO "r+b"
 
 //nome dos campos para comparacao
 #define NRO_INSCRICAO "nroInscricao"
@@ -109,7 +111,7 @@ void escreverDadosEmArquivo(FILE * fileWb, int nroInscricao, double nota, char *
 
 }
 
-void escreverNoEmArquivo(FILE * wbFile, NO * no) {
+void escreverNoEmArquivo(FILE * wbFile, NOARQ * no) {
 
     //grava o valor de removido
     char removido = NAO_REMOVIDO;
@@ -442,8 +444,8 @@ FILE * abrirArquivoBinarioLeitura(char * nomeArquivo) {
  * @param nomeArquivo
  * @return 
  */
-FILE * abrirArquivoBinarioEscritra(char * nomeArquivo) {
-    FILE * file = fopen(nomeArquivo, "r+b");
+FILE * abrirArquivoBinarioEscritra(char * nomeArquivo, char * modo) {
+    FILE * file = fopen(nomeArquivo, modo);
 
     if (file) {
         char status = ARQUIVO_ABERTO_ESCRITA;
@@ -1045,7 +1047,7 @@ void opc5(char * comando) {
     int numeroIteracoes = 0;
     numeroIteracoes = atoi(strsep(&comando, "\0"));
 
-    FILE * fileWb = abrirArquivoBinarioEscritra(nomeArquivo);
+    FILE * fileWb = abrirArquivoBinarioEscritra(nomeArquivo, MODO_EDICAO);
 
     if (fileWb) {
 
@@ -1258,7 +1260,7 @@ void opc6(char * comando) {
     int numeroIteracoes = 0;
     numeroIteracoes = atoi(strsep(&comando, "\0"));
 
-    FILE * fileWb = abrirArquivoBinarioEscritra(nomeArquivo);
+    FILE * fileWb = abrirArquivoBinarioEscritra(nomeArquivo, MODO_EDICAO);
 
     if (fileWb) {
 
@@ -1497,7 +1499,7 @@ void opc7(char * comando) {
     int numeroIteracoes = 0;
     numeroIteracoes = atoi(strsep(&comando, "\0"));
 
-    FILE * fileWb = abrirArquivoBinarioEscritra(nomeArquivo);
+    FILE * fileWb = abrirArquivoBinarioEscritra(nomeArquivo, MODO_EDICAO);
 
     if (fileWb) {
         int vez;
@@ -1799,7 +1801,7 @@ void opc8(char * comando) {
     char * nomeArquivoSaida = strsep(&comando, " ");
 
     //cria a lista para ordenar
-    LISTA *lista = listaCriar();
+    LISTAARQ *lista = listaArqCriar();
 
     //faz a leitura do arquivo de entrada
     FILE * arquivoEntrada = abrirArquivoBinarioLeitura(nomeArquivoEntrada);
@@ -1827,7 +1829,7 @@ void opc8(char * comando) {
             if (lerLinha(arquivoEntrada, RRN, &removido, &nroInscricao, &nota, data, &tamanhoCidade, cidade, &tamanhoEscola, nomeEscola)) {
                 //se o registro não esta removido logicamente
                 if (removido == NAO_REMOVIDO) {
-                    listaInserirInicio(lista, nroInscricao, nota, data, tamanhoCidade, cidade, tamanhoEscola, nomeEscola);
+                    listaArqInserirInicio(lista, nroInscricao, nota, data, tamanhoCidade, cidade, tamanhoEscola, nomeEscola);
                 }
             }
 
@@ -1839,7 +1841,7 @@ void opc8(char * comando) {
 
         //listaImprimir(lista);
 
-        qsOrdernarLista(&lista->inicio);
+        qsArqOrdernarLista(&lista->inicio);
 
         //listaImprimir(lista);
 
@@ -1851,7 +1853,7 @@ void opc8(char * comando) {
             escreverCabecalho(arquivoSaida);
 
             //escreve a lista ordenada no arquivo
-            NO * aux = lista->inicio;
+            NOARQ * aux = lista->inicio;
 
             while (aux != NULL) {
 
@@ -1864,7 +1866,7 @@ void opc8(char * comando) {
             fecharArquivoBinarioEscrita(arquivoSaida);
 
             //apaga a lista
-            listaApagar(lista);
+            listaArqApagar(lista);
 
             binarioNaTela(nomeArquivoSaida);
 
@@ -2029,7 +2031,6 @@ void opc9(char * comando) {
 
 }
 
-
 /**
  * Realize a operação cosequencial de matching (interesecção) de dois arquivos de dados,
  * considerando os valores do campo nroInscricao
@@ -2110,7 +2111,7 @@ void opc10(char * comando) {
                 }
 
             }
-            
+
             fclose(arq1);
             fclose(arq2);
             fecharArquivoBinarioEscrita(arqSaida);
@@ -2226,9 +2227,10 @@ int main() {
             opc9(comando);
             break;
         }
-        case 10:{
+        case 10:
+        {
             opc10(comando);
-         break;   
+            break;
         }
         case 99:
         {

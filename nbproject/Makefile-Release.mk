@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/lista.o \
+	${OBJECTDIR}/listaarq.o \
+	${OBJECTDIR}/listaind.o \
 	${OBJECTDIR}/main.o
 
 
@@ -63,10 +64,15 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/ed2-2019-02-projeto3.exe: ${OBJECTFIL
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/ed2-2019-02-projeto3 ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/lista.o: lista.c
+${OBJECTDIR}/listaarq.o: listaarq.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/lista.o lista.c
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/listaarq.o listaarq.c
+
+${OBJECTDIR}/listaind.o: listaind.c
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/listaind.o listaind.c
 
 ${OBJECTDIR}/main.o: main.c
 	${MKDIR} -p ${OBJECTDIR}
