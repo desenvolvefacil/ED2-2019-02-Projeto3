@@ -1959,7 +1959,7 @@ void opc9(char * comando) {
                         RRN1++;
                         RRN2++;
 
-                    } else {
+                    } else if (nroInscricao1 > 0 && nroInscricao2 > 0) {
 
                         escreverDadosEmArquivo(arqSaida, nroInscricao2, nota2, data2, tamanhoCidade2, cidade2, tamanhoEscola2, nomeEscola2);
 
